@@ -1,14 +1,9 @@
-import clipboard
 import numpy as np
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-from scipy.optimize import curve_fit
-
-def on_copy_click(text):
-    clipboard.copy(text)
-    st.toast(f"Copied to clipboard", icon='✅' )    
+from scipy.optimize import curve_fit  
 
 def parse_array_text(text: str) -> np.ndarray:
     if not text or not text.strip():
@@ -223,5 +218,34 @@ with right:
         code_text = "\n".join(code_lines)
         st.subheader("Generated Python code")
         st.text_area("Python code", value=code_text, height=400)
-        st.button("📋", on_click=on_copy_click, args=(code_text,))
+            
+        # JavaScript for the copy button
+        copy_js = f"""
+        <script>
+        function copyToClipboard() {{
+            navigator.clipboard.writeText(`{code_text}`);
+            alert('✅ Copied code to clipboard!');
+        }}
+        </script>
+
+        <button
+            style="
+                background-color: #f0f2f6;
+                color: black;
+                border: 1px solid #d3d6db;
+                border-radius: 4px;
+                padding: 0.25em 0.75em;
+                font-size: 14px;
+                cursor: pointer;
+            "
+            onclick="copyToClipboard()"
+        >
+            📋 Copy to Clipboard
+        </button>
+        """
+
+        # Render the button
+        st.components.v1.html(copy_js, height=50)
         st.download_button("Download Python code", data=code_text, file_name="plot_code.py", mime="text/x-python")
+
+        
